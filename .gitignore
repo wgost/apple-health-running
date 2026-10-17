@@ -1,0 +1,17 @@
+# Personal health data and generated output: never commit
+*.zip
+export.xml
+export_cda.xml
+apple_health_export/
+output/
+*.rds
+*.html
+*.csv
+
+# R / RStudio
+.Rhistory
+.RData
+.Rproj.user/
+*_files/
+*_cache/
+.DS_Store
