@@ -15,3 +15,7 @@ output/
 *_files/
 *_cache/
 .DS_Store
+
+# ...except the anonymised sample in example/
+!example/export.zip
+!example/*.html
