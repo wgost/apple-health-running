@@ -8,9 +8,6 @@
 button { font:inherit; cursor:pointer; }
 .seg button { flex:none; min-width:78px; padding:5px 12px; font-size:13px; color:var(--fg); background:var(--bg); border:1px solid var(--rule); border-radius:6px; }
 .seg button:hover { border-color:var(--accent); color:var(--accent); }
-/* full-width charts come in a wide and a phone-sized version; show the one that fits the window */
-@media (min-width:641px) { img.narrow { display:none !important; } }
-@media (max-width:640px) { img.wide { display:none !important; } }
 /* units: text and figures come in a US (u-us) and a metric (u-si) version; show the one selected by data-units on <html> (US by default) */
 :root[data-units="si"] .u-us { display:none !important; }
 :root:not([data-units="si"]) .u-si { display:none !important; }
@@ -121,7 +118,6 @@ table.formulas td:first-child { white-space:nowrap; font-weight:600; }
 /* Print: always light, no header or switches, all panes shown, light figures */
 @media print {
   :root, :root[data-theme] { color-scheme:light; --bg:#fff; --surface:#fff; --fg:#14181d; --fg2:#4a525c; --fg3:#6f7781; --rule:#dde1e6; --grid:#e8ebee; }
-  img.narrow { display:none !important; } img.wide { display:block !important; }
   #topbar, .seg { display:none; }
   .pane[hidden] { display:block !important; }
   .pane-title { display:block; }

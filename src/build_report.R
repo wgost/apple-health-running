@@ -97,30 +97,26 @@ build_report <- function(data_rds, start, end, out_file, css_file) {
     add('<div id="', id, '" class="section level2"><h2>', esc(t), "</h2>") }
   close_div <- function() add("</div>")
   bullets <- function(items) add("<ul>", paste0("<li>", items, "</li>", collapse = "\n"), "</ul>")
-  # A phone-sized copy of a chart: the legend in a few columns (a 7.2 in image shrunk to a phone is unreadable)
-  narrow_plot <- function(p) p + guides(colour = guide_legend(ncol = 3), fill = guide_legend(ncol = 3)) + theme(legend.text = element_text(size = 8))
-  # ggplot -> a chart box: HTML title and subtitle (taken from the plot) above a base64 PNG. A full-width chart also
-  # gets a phone-sized copy; the CSS shows the one that fits.
+  # ggplot -> a chart box: HTML title and subtitle (taken from the plot) above a base64 PNG. One image per chart, at
+  # the same aspect ratio on every screen; the browser scales it to the box width.
   fig <- function(p, height, cls = NULL, width = 7.2) {
     if (is.null(p)) return(invisible())
-    png_img <- function(plot, class, w, h) {
+    png_img <- function(plot, w, h) {
       f <- tempfile(fileext = ".png")
       if (requireNamespace("ragg", quietly = TRUE))        # ragg (optional) gives smaller files
         ragg::agg_png(f, width = w, height = h, units = "in", res = FIG_DPI, background = "transparent")
       else grDevices::png(f, width = w, height = h, units = "in", res = FIG_DPI, bg = "transparent")
       print(plot); grDevices::dev.off()
       raw <- readBin(f, "raw", file.size(f)); unlink(f)
-      paste0('<img', if (nzchar(class)) paste0(' class="', class, '"'), ' src="data:image/png;base64,', b64_encode(raw), '" alt="', alt, '" />')
+      paste0('<img src="data:image/png;base64,', b64_encode(raw), '" alt="', alt, '" />')
     }
     lb <- get_labs(p); title <- lb$title; sub <- lb$subtitle
     alt <- if (is.null(title)) "" else esc(title)
     p <- p + labs(title = NULL, subtitle = NULL)
-    phone <- width > 5; nh <- max(4, height * 1.2)
     add('<div class="chart', if (width < 5) " panel", if (!is.null(cls)) paste0(" ", cls), '">',
         if (!is.null(title)) paste0('<p class="ctitle">', esc(title), "</p>"),
         if (!is.null(sub)) paste0('<p class="csub">', esc(sub), "</p>"),
-        '<p class="fig">', png_img(p, if (phone) "wide" else "", width, height),
-        if (phone) png_img(narrow_plot(p), "narrow", 3.6, nh), "</p></div>")
+        '<p class="fig">', png_img(p, width, height), "</p></div>")
   }
 
   fig_u <- function(build, height) for (u in UN) fig(build(u), height, u$cls)   # one figure per unit system
