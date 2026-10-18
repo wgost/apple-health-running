@@ -541,16 +541,19 @@ build_report <- function(data_rds, start, end, out_file, css_file) {
     "for(var j=0;j<panes.length;j++)panes[j].hidden=panes[j].getAttribute('data-pane')!==id;}",
     "seg.addEventListener('click',function(e){var b=e.target.closest('button');if(b)pick(b.getAttribute('data-pane'));});pick('all');}",
     "for(var k=0;k<segs.length;k++)wire(segs[k]);})();</script>")
-  # Tap a chart on a phone to see it full screen. In portrait the chart is turned sideways to use the screen's length;
-  # tap anywhere, the close button or Escape to go back.
+  # Tap a chart on a phone to see it full screen, with its title and subtitle (HTML above the image, so copied here).
+  # Title and image are one block; in portrait the block is turned sideways to use the screen's length, and scaled to fit.
+  # Tap anywhere, the close button or Escape to go back.
   lightbox_js <- paste0("<script>(function(){var mq=window.matchMedia('(max-width:760px)');",
     "var box=document.createElement('div');box.id='lightbox';box.hidden=true;",
-    "box.innerHTML='<button type=\"button\" aria-label=\"Close\">\\u2715</button><img alt=\"\">';document.body.appendChild(box);",
-    "var im=box.querySelector('img');",
-    "function fit(){if(box.hidden||!im.naturalWidth)return;var W=window.innerWidth,H=window.innerHeight,iw=im.naturalWidth,ih=im.naturalHeight,",
-    "rot=H>W&&iw>ih,pad=12,s=Math.min(((rot?H:W)-2*pad)/iw,((rot?W:H)-2*pad)/ih);",
-    "im.style.width=iw*s+'px';im.style.height=ih*s+'px';im.style.transform='translate(-50%,-50%)'+(rot?' rotate(90deg)':'');}",
-    "function open(t){im.onload=fit;im.src=t.src;im.alt=t.alt;box.hidden=false;document.documentElement.classList.add('lb-open');fit();}",
+    "box.innerHTML='<div class=\"lbstage\"><button type=\"button\" aria-label=\"Close\">\\u2715</button><p class=\"lbt\"></p><p class=\"lbs\"></p><img alt=\"\"></div>';document.body.appendChild(box);",
+    "var st=box.querySelector('.lbstage'),lt=box.querySelector('.lbt'),ls=box.querySelector('.lbs'),im=box.querySelector('img');",
+    "function fit(){if(box.hidden||!im.naturalWidth)return;var W=window.innerWidth,H=window.innerHeight,rot=H>W&&im.naturalWidth>im.naturalHeight,pad=12,",
+    "aw=(rot?H:W)-2*pad,ah=(rot?W:H)-2*pad,tf='translate(-50%,-50%)'+(rot?' rotate(90deg)':'');",
+    "st.style.width=aw+'px';st.style.transform=tf;st.style.transform=tf+' scale('+Math.min(1,ah/st.offsetHeight)+')';}",
+    "function text(el,src){var n=src&&src.textContent.trim();el.textContent=n||'';el.hidden=!n;}",
+    "function open(t){var c=t.closest('.chart');text(lt,c&&c.querySelector('.ctitle'));text(ls,c&&c.querySelector('.csub'));",
+    "im.onload=fit;im.src=t.src;im.alt=t.alt;box.hidden=false;document.documentElement.classList.add('lb-open');fit();}",
     "function close(){box.hidden=true;im.removeAttribute('src');document.documentElement.classList.remove('lb-open');}",
     "document.addEventListener('click',function(e){var t=e.target;if(!t.closest)return;",
     "if(t.closest('#lightbox')){close();return;}if(mq.matches&&t.matches('.chart .fig img'))open(t);});",
