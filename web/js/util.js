@@ -1,4 +1,4 @@
-// Small shared helpers: numbers, dates and text formatting. Mirrors the R helpers in src/metrics.R and src/build_report.R.
+// Small shared helpers: numbers, dates and text formatting. Mirrors the R helpers in cli/metrics.R and cli/report/format.R.
 
 export const KM_PER_MI = 1.609344;
 export const MI_PER_KM = 1 / KM_PER_MI;

@@ -2,7 +2,7 @@
 // chart is a 720 unit wide viewBox with ~12 unit axis text, so text scales with the chart on phones. Colours work
 // on the dark and the light page (mid-grey text, faint grid).
 
-import { esc, lm, isFin, dayNum, dayStr, monShort, dayOfMonth, yearOf, fmtMonDD, monthFirst, addMonths } from './util.js';
+import { esc, lm, isFin, monShort, yearOf, fmtMonDD, monthFirst, addMonths, fmtPace } from './util.js';
 
 export const PAL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#6250d6'];
 export const RAMP = ['#d7301f', '#f28e2b', '#d4b000', '#1baf7a', '#2a78d6', '#6250d6'];
@@ -150,4 +150,8 @@ export function chart(spec) {
   return o.join('');
 }
 
-export { dayNum, dayStr, dayOfMonth };
+// ---- small builders for the chart specs the report sections pass to chart() ----
+const SIZE_PX = 1.98;   // ggplot point size -> radius in a 100 px/in chart
+export const dateAxis = (days, extra = {}) => ({ ticks: dateTicks(Math.min(...days), Math.max(...days)), ...extra });
+export const dots = (rs, fx, fy, color, size) => ({ kind: 'points', r: size * SIZE_PX, pts: rs.map((r) => ({ x: fx(r), y: fy(r), c: color(r) })) });
+export const paceTicks = (vals) => numTicks(Math.min(...vals), Math.max(...vals), 5, fmtPace);

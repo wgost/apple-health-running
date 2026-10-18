@@ -1,4 +1,4 @@
-// Stream an Apple Health export (.zip) into compact tables. A port of src/parse_export.R: export.xml is read once,
+// Stream an Apple Health export (.zip) into compact tables. A port of cli/parse_export.R: export.xml is read once,
 // line by line (Apple writes one element per line), and only running workouts and a few record types are kept.
 
 import { openExportXml } from './zip.js';

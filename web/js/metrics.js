@@ -1,4 +1,4 @@
-// Run-level metrics and monthly / weekly summaries. A port of src/metrics.R; names follow the R code
+// Run-level metrics and monthly / weekly summaries. A port of cli/metrics.R; names follow the R code
 // (snake_case fields, same formulas) so the two can be compared number for number.
 
 import {
