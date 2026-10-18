@@ -110,7 +110,7 @@ build_report <- function(data_rds, start, end, out_file, css_file) {
       raw <- readBin(f, "raw", file.size(f)); unlink(f)
       paste0('<img src="data:image/png;base64,', b64_encode(raw), '" alt="', alt, '" />')
     }
-    lb <- if (exists("get_labs", envir = asNamespace("ggplot2"), inherits = FALSE)) ggplot2::get_labs(p) else p$labels   # get_labs() needs ggplot2 4.0+
+    lb <- get_labs(p)
     title <- lb$title; sub <- lb$subtitle
     alt <- if (is.null(title)) "" else esc(title)
     p <- p + labs(title = NULL, subtitle = NULL)

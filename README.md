@@ -15,7 +15,7 @@ See the [example report](https://htmlpreview.github.io/?https://github.com/wgost
 
 ## Usage
 
-Needs R ≥ 4.1 and the `ggplot2` package (3.4 or newer). The `ragg` package is optional; if it is installed the report file is smaller.
+Needs R ≥ 4.1 and the `ggplot2` package (4.0 or newer). The `ragg` package is optional; if it is installed the report file is smaller.
 
 ### Try the example
 
