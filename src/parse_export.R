@@ -5,6 +5,9 @@
 # per line, so each <Record>, <Workout> and child element is matched with
 # regular expressions.
 
+# Bump when read_health_export() starts keeping different data, so cached parses are redone.
+PARSER_VERSION <- 4L
+
 # ---- helpers ---------------------------------------------------------------
 
 # Extract the value of XML attribute `name` from each line (NA when absent).
@@ -59,15 +62,18 @@ read_health_export <- function(zip_path, start, end = Sys.Date(), chunk_lines = 
     RestingHeartRate = "HKQuantityTypeIdentifierRestingHeartRate",
     HeartRateVariabilitySDNN = "HKQuantityTypeIdentifierHeartRateVariabilitySDNN",
     VO2Max = "HKQuantityTypeIdentifierVO2Max",
-    HeartRateRecoveryOneMinute = "HKQuantityTypeIdentifierHeartRateRecoveryOneMinute"
+    HeartRateRecoveryOneMinute = "HKQuantityTypeIdentifierHeartRateRecoveryOneMinute",
+    RunningPower = "HKQuantityTypeIdentifierRunningPower",
+    RunningStrideLength = "HKQuantityTypeIdentifierRunningStrideLength"
   )
-  stat_types <- c("DistanceWalkingRunning", "StepCount", "RunningVerticalOscillation", "RunningGroundContactTime")
+  stat_types <- c("DistanceWalkingRunning", "StepCount", "ActiveEnergyBurned",
+                  "RunningVerticalOscillation", "RunningGroundContactTime")
   rec_pat <- paste0('^ <Record type="(', paste(rec_types, collapse = "|"), ')"')
 
   con <- open_export_xml(zip_path)
   on.exit(close(con), add = TRUE)
 
-  export_date <- NA_character_
+  export_date <- NA_character_; birth_date <- NA_character_
   rec_chunks <- list(); wk_rows <- list(); wk_stats <- list(); wk_meta <- list()
   carry <- character(0); n_read <- 0
   wid <- 0L
@@ -96,6 +102,8 @@ read_health_export <- function(zip_path, start, end = Sys.Date(), chunk_lines = 
     if (is.na(export_date)) {
       j <- grep("<ExportDate ", lines, fixed = TRUE)
       if (length(j)) export_date <- xml_attr(lines[j[1]], "value")
+      j <- grep("<Me ", lines, fixed = TRUE)
+      if (length(j)) birth_date <- xml_attr(lines[j[1]], "HKCharacteristicTypeIdentifierDateOfBirth")
     }
 
     # -- records
@@ -139,7 +147,7 @@ read_health_export <- function(zip_path, start, end = Sys.Date(), chunk_lines = 
         workout_id = wid, type = sub("^HKQuantityTypeIdentifier", "", xml_attr(s, "type")),
         sum = as.numeric(xml_attr(s, "sum")), average = as.numeric(xml_attr(s, "average")),
         unit = xml_attr(s, "unit"), stringsAsFactors = FALSE)
-      m <- body[startsWith(body, "  <MetadataEntry ") & grepl('key="HKIndoorWorkout"', body, fixed = TRUE)]
+      m <- body[startsWith(body, "  <MetadataEntry ") & grepl('key="HK(IndoorWorkout|WeatherTemperature|WeatherHumidity)"', body)]
       if (length(m)) wk_meta[[wid]] <- data.frame(
         workout_id = wid, key = xml_attr(m, "key"), value = xml_attr(m, "value"), stringsAsFactors = FALSE)
     }
@@ -157,6 +165,7 @@ read_health_export <- function(zip_path, start, end = Sys.Date(), chunk_lines = 
     workout_meta = bind(wk_meta),
     records = records,
     export_date = export_date,
+    birth_date = birth_date,
     zip_path = normalizePath(zip_path)
   )
 }
