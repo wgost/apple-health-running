@@ -1,7 +1,7 @@
 # apple-health-running (v0.2)
 
 An R program that turns the Apple Health export (`export.zip`) from your iPhone
-into one self-contained HTML running report (no server, works offline). The report includes:
+into one self-contained HTML running report. The report includes:
 
 - **Summary**: how you have been running lately. The latest month at a glance, month-by-month tables that show
   whether you did more or less than last month, time spent in each heart-rate zone, and weekly charts.
@@ -67,8 +67,7 @@ monthly_summary(runs)
 The report takes each running workout in the export, measures it (distance, duration, pace, heart
 rate, energy, cadence), adds the watch's extra readings when present (power, stride length, vertical
 oscillation, ground contact, weather), and then groups the runs by month and by week to show totals, averages
-and trends. Heart-rate zones are set from your resting and maximum HR, and runs missing a reading are skipped
-for that metric only. For the full detail and the data checks, open the
+and trends. Heart-rate zones are set from your resting and maximum HR. For the full detail and the data checks, open the
 [example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-17.html) and see its **Reference** section, under "How it's calculated".
 
 ## Layout
