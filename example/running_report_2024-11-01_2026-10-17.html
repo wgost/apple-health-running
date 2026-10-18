@@ -33,13 +33,15 @@ h2 { font-size:20px; margin-top:28px; }
 /* once the page is scrolled (class set in build_report.R) the bar turns semi-transparent and blurs what is behind it */
 #topbar.scrolled { background:color-mix(in srgb, var(--hbg) 70%, transparent); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
 #topbar button { color:var(--hfg); background:var(--hbtn); border:1px solid var(--hline); border-radius:6px; padding:5px 10px; font-size:14px; line-height:1.3; }
-#topbar button:hover { color:var(--hhover); border-color:var(--hhover); }
+@media (hover:hover) {
+  #topbar button:hover { color:var(--hhover); border-color:var(--hhover); }
+  #topbar a:hover { opacity:1; color:var(--hhover); }
+}
 #topbar nav { flex:1; min-width:0; overflow-x:auto; scrollbar-width:none; white-space:nowrap; }
 #topbar nav::-webkit-scrollbar { display:none; }
 #topbar ul { display:flex; gap:22px; list-style:none; margin:0; padding:0; }
 /* section tabs: the same size as the section titles (h1); plain text, the section being read gets a brighter colour and an underline (set by the scroll script) */
 #topbar a { display:block; padding:4px 2px 2px; font-size:26px; line-height:1.3; color:var(--hfg); opacity:.72; text-decoration:none; border-bottom:2px solid transparent; }
-#topbar a:hover { opacity:1; color:var(--hhover); }
 #topbar a.on { opacity:1; border-bottom-color:var(--hhover); font-weight:600; }
 #topbar .tools { display:flex; gap:8px; }
 #topbar button i { font-style:normal; }   /* "mi \u00b7" / "km \u00b7" in the units button; hidden on phones */
@@ -136,7 +138,7 @@ table.formulas td:first-child { white-space:nowrap; font-weight:600; }
 </head>
 <body>
 <header id="topbar"><nav><ul><li><a href="#summary">Summary</a></li><li><a href="#performance">Performance</a></li><li><a href="#reference">Reference</a></li></ul></nav><div class="tools"><button id="theme-toggle" type="button" aria-label="Switch between dark and light mode" title="Dark / light"></button><button id="units-toggle" type="button" aria-label="Switch between US units (miles, °F) and metric units (km, °C)" title="US / metric units"></button></div></header>
-<script>(function(){var r=document.documentElement;function wire(id,attr,a,b,key,labelA,labelB){var btn=document.getElementById(id);function show(){btn.innerHTML=r.getAttribute(attr)===a?labelA:labelB;}btn.addEventListener('click',function(){var v=r.getAttribute(attr)===a?b:a;r.setAttribute(attr,v);try{localStorage.setItem(key,v);}catch(e){}show();});show();}wire('theme-toggle','data-theme','light','dark','theme','☾','☀');wire('units-toggle','data-units','si','us','units','<i>km · </i>°C','<i>mi · </i>°F');var bar=document.getElementById('topbar');function onscroll(){bar.classList.toggle('scrolled',window.scrollY>8);}window.addEventListener('scroll',onscroll,{passive:true});onscroll();var links=document.querySelectorAll('#topbar nav a');function spy(){var cur=null;for(var i=0;i<links.length;i++){var el=document.getElementById(links[i].getAttribute('href').slice(1));if(el&&el.getBoundingClientRect().top<=140)cur=links[i];}if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4)cur=links[links.length-1];for(var j=0;j<links.length;j++)links[j].classList.toggle('on',links[j]===cur);}window.addEventListener('scroll',spy,{passive:true});window.addEventListener('resize',spy);window.addEventListener('load',spy);spy();})();</script>
+<script>(function(){var r=document.documentElement;function wire(id,attr,a,b,key,labelA,labelB){var btn=document.getElementById(id);function show(){btn.innerHTML=r.getAttribute(attr)===a?labelA:labelB;}btn.addEventListener('click',function(){var v=r.getAttribute(attr)===a?b:a;r.setAttribute(attr,v);try{localStorage.setItem(key,v);}catch(e){}show();});show();}wire('theme-toggle','data-theme','light','dark','theme','☾','☀');wire('units-toggle','data-units','si','us','units','<i>km · </i>°C','<i>mi · </i>°F');var bar=document.getElementById('topbar');function onscroll(){bar.classList.toggle('scrolled',window.scrollY>8);}window.addEventListener('scroll',onscroll,{passive:true});onscroll();var links=document.querySelectorAll('#topbar nav a');function spy(){var cur=links[0];for(var i=0;i<links.length;i++){var el=document.getElementById(links[i].getAttribute('href').slice(1));if(el&&el.getBoundingClientRect().top<=140)cur=links[i];}if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4)cur=links[links.length-1];for(var j=0;j<links.length;j++)links[j].classList.toggle('on',links[j]===cur);}window.addEventListener('scroll',spy,{passive:true});window.addEventListener('resize',spy);window.addEventListener('load',spy);spy();})();</script>
 <main>
 <h1 class="title">Running Log</h1>
 <div class="meta"><span>Range <b>Aug 3 – Oct 16, 2026</b></span><span>Runs <b>34</b> (30 outdoor, 4 indoor)</span><span>Export generated <b>Oct 17, 2026</b></span><span>Source: Apple Watch</span></div>
