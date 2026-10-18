@@ -1,4 +1,4 @@
-// Section 3: how the numbers are calculated, and data checks. Takes the context built by buildReport() in ../report.js.
+// How the numbers are calculated, and data checks. Takes the context built by buildReport() in ../build-report.js.
 
 import * as M from '../metrics.js';
 import { KM_PER_MI, isFin, rnd, sum, finite, esc, fmtPace, f2, r0, fmtMonDD } from '../util.js';
@@ -7,7 +7,7 @@ import { table } from './page.js';
 
 export function reportReference(ctx) {
   const { x, opts, runs, outv, endActual, maxHr, maxHrFromAge, restHr, restHrFound, add, h1, h2, closeDiv } = ctx;
-  h1('3. Reference');
+  h1('Reference');
   h2("How it's calculated");
   const calc = [
     ['Distance and pace', 'Distance, duration', 'Workout totals'],

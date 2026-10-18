@@ -6,8 +6,8 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, openAsBlob } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { openExportXml } from '../src/web/js/zip.js';
-import { readHealthExport } from '../src/web/js/parse.js';
+import { openExportXml } from '../src/lib/zip.js';
+import { readHealthExport } from '../src/lib/parse.js';
 
 const XML = '<?xml version="1.0"?>\n<HealthData>\n <ExportDate value="2026-01-01 00:00:00 +0000"/>\n</HealthData>\n'.repeat(1000);
 function makeZip(method, zip64, xmlName = 'export.xml', cda = 'export_cda.xml') {
@@ -34,7 +34,7 @@ test('rejects a zip without an XML file', async () => {
   execFileSync('python3', ['-c', "import zipfile,sys\nzipfile.ZipFile(sys.argv[1],'w').writestr('x.txt','x')", path]);
   await assert.rejects(openExportXml(await openAsBlob(path)), /No XML file/);
 });
-test('parses the sample export like the R parser (34 running workouts, 83,444 samples)', async () => {
+test('parses the sample export (34 running workouts, 83,444 samples)', async () => {
   const x = await readHealthExport(await openAsBlob(new URL('../example/export.zip', import.meta.url).pathname), { start: '2026-08-01', end: '2026-10-18' });
   assert.equal(x.workouts.length, 34);
   assert.equal(x.sampleCount, 83444);

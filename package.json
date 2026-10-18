@@ -1,0 +1,11 @@
+{
+  "name": "apple-health-running",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Turns an Apple Health export into one self-contained HTML running report, in the browser or from the command line.",
+  "license": "GPL-3.0-only",
+  "bin": { "apple-health-running": "src/cli.mjs" },
+  "scripts": { "test": "node --test test/*.test.mjs" },
+  "engines": { "node": ">=20" }
+}

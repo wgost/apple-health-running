@@ -1,5 +1,5 @@
 // Page assembly: tables, an accumulator for the report body (headings, chart boxes), and the final page, which is
-// the shared template (shared/page.tmpl) filled with the shared CSS and scripts.
+// the template (assets/page.tmpl) filled with the CSS and scripts from assets/.
 import { esc, slug } from '../util.js';
 import { UN } from './format.js';
 
@@ -17,9 +17,9 @@ export const pairCell = (v, d) => `<span class="v">${v}</span>${d}`;
 export const fillTemplate = (tmpl, vars) => tmpl.replace(/\{\{([a-z_]+)\}\}/g, (_, k) => vars[k]);
 
 /**
- * @param shared  the files in shared/ as strings: { template, themeInit, css, pageJs }
+ * @param assets  the files in assets/ as strings: { template, themeInit, css, pageJs }
  */
-export function newPage(shared) {
+export function newPage(assets) {
   const parts = [], toc = [];
   const add = (...s) => parts.push(s.join(''));
   const h1 = (t) => { const id = slug(t); toc.push({ id, text: t }); add(`<div id="${id}" class="section level1"><h1>${esc(t)}</h1>`); };
@@ -41,8 +41,8 @@ export function newPage(shared) {
   };
 
   const render = () => {
-    const tocHtml = `<ul>${toc.map((t) => `<li><a href="#${t.id}">${esc(t.text.replace(/^[0-9]+\.\s*/, ''))}</a></li>`).join('')}</ul>`;
-    return fillTemplate(shared.template, { theme_init: shared.themeInit, css: shared.css, toc: tocHtml, body: parts.join('\n'), page_js: shared.pageJs });
+    const tocHtml = `<ul>${toc.map((t) => `<li><a href="#${t.id}">${esc(t.text)}</a></li>`).join('')}</ul>`;
+    return fillTemplate(assets.template, { theme_init: assets.themeInit, css: assets.css, toc: tocHtml, body: parts.join('\n'), page_js: assets.pageJs });
   };
   return { add, h1, h2, closeDiv, bullets, fig, figU, figGrid, render };
 }

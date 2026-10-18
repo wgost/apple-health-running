@@ -1,4 +1,4 @@
-// Scripts of the generated report page, inlined at the end of <body> by both report builders (cli/ and web/).
+// Scripts of the generated report page, inlined at the end of <body> by the report builder.
 // Four independent parts: header buttons and section tabs, All / Outdoor / Indoor switches, full-screen charts.
 
 // ---- Header: dark/light and units buttons, translucent bar once scrolled, underline of the section being read ----

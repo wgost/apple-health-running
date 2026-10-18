@@ -1,4 +1,4 @@
-// Section 2: outdoor-run performance trends and the temperature effect. Takes the context built by buildReport() in ../report.js.
+// Outdoor-run performance trends and the temperature effect. Takes the context built by buildReport() in ../build-report.js.
 
 import * as M from '../metrics.js';
 import { isFin, rnd, fmtPace, f1, f2, r0, fToC } from '../util.js';
@@ -8,7 +8,7 @@ import { table, transpose, pairCell } from './page.js';
 
 export function reportPerformance(ctx) {
   const { runs, outv, monthNames, monthFollows, add, h1, h2, closeDiv, bullets, fig, figU, figGrid } = ctx;
-  h1('2. Performance');
+  h1('Performance');
   add('<p>This section uses outdoor runs only, so treadmill distance does not blur the comparisons. Read the metrics as trends, not scores: most have no universal target, so compare runs at a similar pace and temperature.</p>');
   bullets([
     '<b>Efficiency</b>: metres per heartbeat; higher is better. Look for a rise at the same pace.',

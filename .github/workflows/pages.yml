@@ -4,7 +4,7 @@ name: Deploy web app to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['src/web/**', 'src/shared/**', 'example/export.zip', '.github/workflows/pages.yml']
+    paths: ['src/web/**', 'src/lib/**', 'example/export.zip', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -26,11 +26,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       - name: Assemble the site
-        # Same folder layout as the repository, because the app loads ../shared/ and the sample ../../example/export.zip.
+        # Same folder layout as the repository, because the app loads ../lib/ and the sample ../../example/export.zip.
         run: |
           mkdir -p site/src site/example
           cp -r src/web site/src/web
-          cp -r src/shared site/src/shared
+          cp -r src/lib site/src/lib
           cp example/export.zip site/example/
           printf '%s\n' '<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=src/web/"><link rel="canonical" href="src/web/"><title>Running report</title><a href="src/web/">Running report</a>' > site/index.html
       - uses: actions/upload-pages-artifact@v3

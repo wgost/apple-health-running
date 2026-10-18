@@ -1,12 +1,12 @@
-// Tiny SVG chart engine (no dependencies). Charts keep the proportions of the R/ggplot figures: a 7.2 in wide
+// Tiny SVG chart engine (no dependencies). A 7.2 in wide
 // chart is a 720 unit wide viewBox with ~12 unit axis text, so text scales with the chart on phones. Colours work
 // on the dark and the light page (mid-grey text, faint grid).
 
 import { esc, lm, isFin, monShort, yearOf, fmtMonDD, monthFirst, addMonths, fmtPace } from './util.js';
 
 export const PAL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#6250d6'];
-export const RAMP = ['#d7301f', '#f28e2b', '#d4b000', '#1baf7a', '#2a78d6', '#6250d6'];
-export const MID = '#818994';
+const RAMP = ['#d7301f', '#f28e2b', '#d4b000', '#1baf7a', '#2a78d6', '#6250d6'];
+const MID = '#818994';
 const GRID = '#8a929c', TREND = '#9aa3ad';
 const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif';
 

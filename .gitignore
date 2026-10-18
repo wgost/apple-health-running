@@ -4,16 +4,10 @@ export.xml
 export_cda.xml
 apple_health_export/
 output/
-*.rds
 *.html
 *.csv
 
-# R / RStudio
-.Rhistory
-.RData
-.Rproj.user/
-*_files/
-*_cache/
+node_modules/
 .DS_Store
 
 # ...except the anonymised sample in example/

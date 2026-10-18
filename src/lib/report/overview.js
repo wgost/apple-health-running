@@ -1,4 +1,4 @@
-// The meta line and the KPI cards at the top of the report. Takes the context built by buildReport() in ../report.js.
+// The meta line and the KPI cards at the top of the report. Takes the context built by buildReport() in ../build-report.js.
 
 import { isFin, rnd, sum, dayNum, esc, fmtDur, f1, r0, yearOf } from '../util.js';
 import { distU, paceU, kcalU, hm, md } from './format.js';

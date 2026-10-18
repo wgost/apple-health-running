@@ -1,6 +1,0 @@
-{
-  "name": "apple-health-running-web",
-  "private": true,
-  "type": "module",
-  "description": "Browser-only version of the running report: upload export.zip, get the report. Nothing is uploaded."
-}

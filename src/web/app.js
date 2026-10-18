@@ -10,7 +10,7 @@ const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(
 
 function setFile(f) {
   file = f;
-  error.hidden = true;
+  error.hidden = true; progress.hidden = true;
   drop.classList.toggle('has-file', !!f);
   $('drop-text').textContent = f ? `${f.name} (${fmtBytes(f.size)})` : 'Choose export.zip';
   go.disabled = !f;
@@ -23,11 +23,13 @@ drop.addEventListener('drop', (e) => { if (e.dataTransfer.files[0]) setFile(e.da
 
 sample.addEventListener('click', async (e) => {
   e.preventDefault();
+  error.hidden = true; progress.hidden = false; go.disabled = true; bar.hidden = true; status.textContent = 'Loading the sample export';
   try {
     const res = await fetch('../../example/export.zip');
     if (!res.ok) throw new Error();
     setFile(new File([await res.blob()], 'export.zip'));
     months.value = '24';
+    progress.hidden = false; bar.hidden = true; status.textContent = 'Sample loaded. Press Create report.';
   } catch { showError('The sample is only available when the whole repository is served.'); }
 });
 
@@ -36,7 +38,7 @@ function showError(msg) { error.textContent = msg; error.hidden = false; progres
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   if (!file) return;
-  error.hidden = true; progress.hidden = false; go.disabled = true; bar.value = 0; status.textContent = 'Opening the zip';
+  error.hidden = true; progress.hidden = false; go.disabled = true; bar.hidden = false; bar.value = 0; status.textContent = 'Opening the zip';
   if (worker) worker.terminate();
   worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
   worker.onmessage = ({ data }) => {

@@ -1,8 +1,8 @@
-# apple-health-running (v0.3)
+# apple-health-running (v0.4)
 
 Turns the Apple Health export from your iPhone into one self-contained HTML running report.
-There are two versions that produce the same report: a [browser app](#web-app) (`src/web/`)
-and an R [command-line tool](#command-line-r) (`src/cli/`). The report includes:
+You can use it as a [browser app](#web-app) or from the [command line](#command-line); both produce the same report.
+The report includes:
 
 - **Summary**: how you have been running lately. The latest month at a glance, month-by-month tables that show
   whether you did more or less than last month, time spent in each heart-rate zone, and weekly charts.
@@ -18,28 +18,35 @@ See the [example report](https://htmlpreview.github.io/?https://github.com/wgost
 
 **Live app: https://wgost.github.io/apple-health-running/**
 
-1. Open the page and choose `export.zip` (or drop it on the page). Use "Try it with the sample export" to see a report first.
+1. Open the page and choose `export.zip` (or drop it on the page). "Try it with the sample export" loads a sample so you can see a report first.
 2. Pick the period and press **Create report**.
 3. Read the report on the page, or press **Download HTML** to keep it.
 
-The file is read in your browser tab and is never uploaded. A large export takes a minute or two, so keep the tab open.
-It needs a recent browser (Chrome or Edge 103+, Safari 16.4+, Firefox 113+). Running it locally and the code
-are described in [`src/web/README.md`](src/web/README.md).
+The file is read in your browser tab and is never uploaded, so the app is just static files. A large export takes a
+minute or two, so keep the tab open. On a phone, a very large export can stall for lack of memory; use a computer.
+It needs a recent browser (Chrome or Edge 103+, Safari 16.4+, Firefox 113+).
 
-## Command line (R)
+### Run it locally
 
-Needs R ≥ 4.1 and the `ggplot2` (4.0 or newer) and `svglite` packages:
+Any static file server works. From the project folder:
 
-```r
-install.packages(c("ggplot2", "svglite"))
+```sh
+python3 -m http.server 8000
+# open http://localhost:8000/src/web/
 ```
+
+To publish it, put `src/web/` and `src/lib/` side by side on a static host.
+
+## Command line
+
+Needs [Node.js](https://nodejs.org/) 20 or newer.
 
 ### Try the example
 
 `example/export.zip` is a small, anonymised sample export. From the project folder:
 
 ```sh
-Rscript src/cli/run_report.R example/export.zip --duration 24 --out example   # 24 months reaches back to the sample's data
+node src/cli.mjs example/export.zip --duration 24 --end 2026-10-18 --out example   # 24 months reaches back to the sample's data
 ```
 
 Then open the new `example/running_report_*.html` in a browser; a copy already
@@ -48,36 +55,24 @@ generated this way is included: **[click to open the example report](https://htm
 ### Run it on your own data
 
 Export your data on iPhone: **Health app → profile picture → Export All Health Data**.
-AirDrop or save the resulting `export.zip` to your computer. Don't unzip it; the
+AirDrop or save the resulting `export.zip` into the project folder. Don't unzip it; the
 program reads the zip directly. Then, from the shell in the project folder:
 
 ```sh
-Rscript src/cli/run_report.R ~/Downloads/export.zip
-Rscript src/cli/run_report.R ~/Downloads/export.zip --duration 6
-Rscript src/cli/run_report.R ~/Downloads/export.zip --out reports
+node src/cli.mjs export.zip
+node src/cli.mjs export.zip --duration 6
+node src/cli.mjs export.zip --out reports
 ```
 
 ### Options
 
 | Option | Default | Meaning |
 |---|---|---|
-| `--duration` | `3` | Calendar months to report, ending today |
+| `--duration` | `3` | Calendar months to report, ending on `--end` |
+| `--end` | today | Last day of the report, as `YYYY-MM-DD` |
 | `--out` | `output` | Output folder |
-| `--reparse` | off | Ignore the cached parse and read the zip again |
 
-The first run on a multi-GB export takes about 1–3 minutes. The parsed data is
-cached in `output/parsed_export.rds` and reused while the zip and the report
-start date are unchanged, so re-running the report is quick.
-
-### From an R session
-
-```r
-source("src/cli/parse_export.R"); source("src/cli/metrics.R")
-start <- report_start(3)                      # same as --duration 3
-x     <- read_health_export("export.zip", start = start)
-runs  <- build_runs(x, start, Sys.Date())
-monthly_summary(runs)
-```
+A multi-GB export takes a few seconds to a minute to read.
 
 ## What it computes
 
@@ -91,21 +86,37 @@ and trends. Heart-rate zones are set from your resting and maximum HR. For the f
 
 ```
 src/
-  cli/        R command-line tool
-  web/        browser app
-  shared/     report page used by both
-test/         tests
-example/      sample export and sample report
+  cli.mjs            command-line tool
+  web/               browser app
+  lib/               code shared by both
+    zip.js           zip reader
+    parse.js         XML parser
+    metrics.js       run metrics and summaries
+    charts.js        SVG charts
+    build-report.js  report builder
+    report/          report sections
+    assets.js        asset loader
+    assets/          page template, CSS, scripts
+test/                tests
+example/             sample export and report
 ```
 
-The two versions share the report page in `src/shared/`. Each has its own code for the numbers,
-tables and charts, and a test checks that they agree.
+The browser app and the command-line tool run the same code in `src/lib/`, so they give the same report.
 
-## What's new in v0.3
+## Tests
 
-- Add a browser version of the report (`src/web/`): choose `export.zip` on a page and get the report
-- Draw charts as inline SVG instead of PNG images
-- Restructure the project for the web and CLI tools, which now share the same report page
+```sh
+npm test    # or: node --test test/*.test.mjs
+```
+
+## What's new in v0.4
+
+- One code base: the command-line tool now runs the same JavaScript as the browser app, so there is a single
+  implementation of the parser, the numbers and the report
+- The R version is removed; the command is now `node src/cli.mjs export.zip` (needs Node.js 20 or newer)
+- New `--end` option to set the last day of the report (default: today)
+- Fix: a run with no recorded distance no longer turns the month's distance, pace and energy per mile into N/A
+- Fix: a run with no step count no longer makes the month's average cadence N/A
 
 ## License
 

@@ -1,10 +1,10 @@
-// Small shared helpers: numbers, dates and text formatting. Mirrors the R helpers in cli/metrics.R and cli/report/format.R.
+// Small helpers: numbers, dates and text formatting.
 
 export const KM_PER_MI = 1.609344;
 export const MI_PER_KM = 1 / KM_PER_MI;
 export const isFin = Number.isFinite;
 
-// R's round(): halves go to the even neighbour (183.5 -> 184, 182.5 -> 182).
+// Rounds halves to the even neighbour (183.5 -> 184, 182.5 -> 182).
 export function rnd(x, digits = 0) {
   if (!isFin(x)) return x;
   const p = 10 ** digits, y = x * p, f = Math.floor(y);
@@ -69,7 +69,7 @@ export const f1 = (v) => (isFin(v) ? v.toFixed(1) : 'N/A');
 export const f2 = (v) => (isFin(v) ? v.toFixed(2) : 'N/A');
 export const r0 = (v) => Math.round(rnd(v)).toLocaleString('en-US');
 export const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/(?<=\w)'/g, '\u2019');
-export const slug = (s) => s.replace(/^[0-9]+\.\s*/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 export const fToC = (f) => ((f - 32) * 5) / 9;
 
 // ---- statistics ----

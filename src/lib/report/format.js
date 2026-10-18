@@ -1,4 +1,4 @@
-// Formatting helpers shared by the report sections: US / metric units, month-over-month change notes.
+// Formatting helpers used by the report sections: US / metric units, month-over-month change notes.
 import { KM_PER_MI, isFin, rnd, fmtPace, fmtHm, f2, r0, fToC, fmtMd } from '../util.js';
 
 export const NO_DELTA = '<span class="d"></span>';

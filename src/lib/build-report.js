@@ -1,5 +1,5 @@
-// Build the running report as one self-contained HTML string. A port of cli/report/build.R: same sections,
-// tables and numbers; charts are inline SVG built by charts.js. The sections live in report/.
+// Build the running report as one self-contained HTML string. Charts are inline SVG built by charts.js;
+// the sections live in report/.
 
 import { isFin, rnd, finite, dayNum, monLong, monShort, dayOfMonth, monthLast, yearOf } from './util.js';
 import * as M from './metrics.js';
@@ -13,7 +13,7 @@ import { reportReference } from './report/reference.js';
 /**
  * @param x          result of readHealthExport()
  * @param startDay   first day of the report range, endDay: last day (normally today); both as day numbers
- * @param opts       { shared: { template, themeInit, css, pageJs } (the files in shared/ as strings),
+ * @param opts       { assets: { template, themeInit, css, pageJs } (the files in assets/ as strings),
  *                     sourceName: string, generated: string }
  */
 export function buildReport(x, startDay, endDay, opts) {
@@ -46,7 +46,7 @@ export function buildReport(x, startDay, endDay, opts) {
   const monthFollows = ms.map((m, i) => i > 0 && monthNo(m.month) - monthNo(ms[i - 1].month) === 1);   // the previous column is the calendar-previous month, so a change can be shown
   const monthPartial = ms.map((m) => { const d1 = monthFirstDay(m.month); return d1 < startDay || endActual < monthLast(d1); });
 
-  const page = newPage(opts.shared);
+  const page = newPage(opts.assets);
   const ctx = { x, startDay, opts, runs, outv, ms, wk, rg, startActual, endActual, maxHr, maxHrFromAge, restHr, restHrFound,
     zlab, zoneNote, zsec, monthNames, latestMonthName, monthPartial, monthFollows, ...page };
 

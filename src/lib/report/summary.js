@@ -1,4 +1,4 @@
-// Section 1: month tables, heart-rate zones and charts for all runs. Takes the context built by buildReport() in ../report.js.
+// Month tables, heart-rate zones and charts for all runs. Takes the context built by buildReport() in ../build-report.js.
 
 import * as M from '../metrics.js';
 import { KM_PER_MI, isFin, rnd, sum, mean, weekStart, fmtPace, f1, f2, r0, fmtMonDD } from '../util.js';
@@ -10,7 +10,7 @@ const ZONE_FILL = ['#c9dff3', '#7fb5e8', '#eda100', '#eb6834', '#c2321f'];   // 
 
 export function reportSummary(ctx) {
   const { x, startDay, runs, ms, wk, rg, endActual, zlab, zoneNote, zsec, monthNames, monthPartial, monthFollows, add, h1, h2, closeDiv, fig, figU, figGrid } = ctx;
-  h1('1. Summary');
+  h1('Summary');
   const segButtons = (group) => add(`<div class="seg" role="group" aria-label="Run type" data-group="${group}">`,
     '<button type="button" data-pane="all">All runs</button><button type="button" data-pane="outdoor">Outdoor</button>',
     '<button type="button" data-pane="indoor">Indoor</button></div>');

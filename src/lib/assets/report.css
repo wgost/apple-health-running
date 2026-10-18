@@ -1,4 +1,4 @@
-/* Dark is the default; the toggles in the header set data-theme and data-units on <html> (see shared/page.js). */
+/* Dark is the default; the toggles in the header set data-theme and data-units on <html> (see assets/page.js). */
 :root { --content-w:880px; color-scheme:dark; --bg:#0f1318; --surface:#171c23; --fg:#e8ebee; --fg2:#aab2bc; --fg3:#8a929c; --rule:#2c333c; --grid:#242a32;
   --accent:#5aa2ff; --zebra:#1b212a;
   --hbg:#16283f; --hfg:#e8ebee; --hbtn:rgba(255,255,255,.08); --hline:rgba(255,255,255,.22); --hhover:#8fc2ff; }
@@ -22,7 +22,7 @@ h2 { font-size:20px; margin-top:28px; }
 /* Header: section tabs on the left, dark/light and units buttons on the right; stays at the top while scrolling. */
 #topbar { position:sticky; top:0; z-index:9; display:flex; align-items:center; gap:16px; padding:8px max(16px, calc((100% - var(--content-w)) / 2));
   background:var(--hbg); color:var(--hfg); border-bottom:1px solid var(--hline); transition:background-color .2s; }
-/* once the page is scrolled (class set in shared/page.js) the bar turns semi-transparent and blurs what is behind it */
+/* once the page is scrolled (class set in assets/page.js) the bar turns semi-transparent and blurs what is behind it */
 #topbar.scrolled { background:color-mix(in srgb, var(--hbg) 70%, transparent); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
 #topbar button { color:var(--hfg); background:var(--hbtn); border:1px solid var(--hline); border-radius:6px; padding:5px 10px; font-size:14px; line-height:1.3; }
 @media (hover:hover) {
@@ -75,10 +75,7 @@ table.formulas td:first-child { white-space:nowrap; font-weight:600; }
 .csub { font-size:13px; color:var(--fg2); margin-top:2px; }
 .fig { margin-top:6px; line-height:0; }
 .fig svg { display:block; width:100%; height:auto; }
-/* the base rules svglite (R) puts in every SVG it writes; scoped to its class so the JavaScript charts are not affected */
-.svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle { fill:none; stroke:#000; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:10; }
-.svglite text { white-space:pre; }
-/* Phones: a chart opens full screen when tapped (shared/page.js); the corner icon says so */
+/* Phones: a chart opens full screen when tapped (assets/page.js); the corner icon says so */
 @media (max-width:760px) {
   .chart .fig { position:relative; }
   .chart .fig svg { cursor:zoom-in; -webkit-tap-highlight-color:transparent; }

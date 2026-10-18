@@ -1,5 +1,4 @@
-// Run-level metrics and monthly / weekly summaries. A port of cli/metrics.R; names follow the R code
-// (snake_case fields, same formulas) so the two can be compared number for number.
+// Run-level metrics and monthly / weekly summaries. Fields are snake_case.
 
 import {
   KM_PER_MI, MI_PER_KM, isFin, rnd, sum, mean, median, finite, dayNum, monthKey, weekStart,
@@ -7,9 +6,8 @@ import {
 } from './util.js';
 
 export const DRIFT_MIN_MIN = 20;   // cardiac drift is only computed for runs of at least this many minutes
-export const ZONE_LO = [0.6, 0.7, 0.8, 0.9];
-export const ZONE_NAMES = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5'];
-export const TEMP_EDGES_F = [60, 70, 80];
+const ZONE_LO = [0.6, 0.7, 0.8, 0.9];
+const TEMP_EDGES_F = [60, 70, 80];
 
 const toMinutes = (v, unit) => (unit === 's' ? v / 60 : unit === 'hr' || unit === 'h' ? v * 60 : v);
 const toKcal = (v, unit) => (unit === 'kJ' ? v / 4.184 : v);   // Apple's "Cal" is kcal
@@ -184,6 +182,7 @@ function monthRow(m) {
   const fast = m.reduce((a, r) => (r.pace_mi < a.pace_mi ? r : a), m[0]);
   const W = sumBy(mech, (r) => r.duration_min);
   const en = m.filter((r) => isFin(r.energy_kcal) && isFin(r.mi));
+  const withCad = m.filter((r) => isFin(r.cadence_spm));
   const dd = m.filter((r) => isFin(r.mi));   // runs with a recorded distance
   const withHr = m.filter((r) => isFin(r.hr_avg));
   const maxes = m.filter((r) => isFin(r.hr_max));
@@ -196,7 +195,7 @@ function monthRow(m) {
     hr_weighted: sumBy(withHr, (r) => r.hr_avg * r.duration_min) / sumBy(withHr, (r) => r.duration_min),
     hr_max: maxes.length ? Math.max(...maxes.map((r) => r.hr_max)) : NaN,
     longest_mi: longest, fastest_pace: fast.pace_mi, fastest_mi: fast.mi,
-    cadence: sumBy(m, (r) => r.cadence_spm * r.duration_min) / sumBy(m, (r) => r.duration_min),   // NaN if any run has no steps, as in R
+    cadence: sumBy(withCad, (r) => r.cadence_spm * r.duration_min) / sumBy(withCad, (r) => r.duration_min),   // runs with steps only
     vert_osc: W > 0 ? sumBy(mech, (r) => r.vert_osc_cm * r.duration_min) / W : NaN,
     gct: W > 0 ? sumBy(mech, (r) => r.gct_ms * r.duration_min) / W : NaN,
     mech_runs: mech.length,
@@ -242,7 +241,7 @@ export function routeGroups(runs, h = 0.6, minRuns = 5) {
 }
 
 // ---- performance analysis ----
-export function wmean(v, w) {
+function wmean(v, w) {
   let num = 0, den = 0;
   v.forEach((x, i) => { if (isFin(x)) { num += x * w[i]; den += w[i]; } });
   return den ? num / den : NaN;
@@ -261,7 +260,7 @@ export function perfSummary(runs) {
   });
 }
 
-export const TEMP_LABELS = {
+const TEMP_LABELS = {
   F: [`Under ${TEMP_EDGES_F[0]}\u00b0F`, `${TEMP_EDGES_F[0]}\u2013${TEMP_EDGES_F[1] - 1}\u00b0F`, `${TEMP_EDGES_F[1]}\u2013${TEMP_EDGES_F[2] - 1}\u00b0F`, `${TEMP_EDGES_F[2]}\u00b0F and over`],
   C: (() => { const e = TEMP_EDGES_F.map((f) => fToC(f).toFixed(1)); return [`Under ${e[0]}\u00b0C`, `${e[0]}\u2013${e[1]}\u00b0C`, `${e[1]}\u2013${e[2]}\u00b0C`, `${e[2]}\u00b0C and over`]; })(),
 };
