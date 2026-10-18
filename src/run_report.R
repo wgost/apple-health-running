@@ -13,8 +13,8 @@
 # the output folder and reused while the zip and the report start date are unchanged.
 
 suppressPackageStartupMessages({
-  if (!requireNamespace("ggplot2", quietly = TRUE))
-    stop("Missing package 'ggplot2'. Install with: install.packages('ggplot2')")
+  if (!requireNamespace("ggplot2", quietly = TRUE) || packageVersion("ggplot2") < "4.0.0")
+    stop("Needs package 'ggplot2' 4.0 or newer. Install with: install.packages('ggplot2')")
 })
 
 # The report text uses non-ASCII characters (°, –, →); make sure the session is UTF-8.
