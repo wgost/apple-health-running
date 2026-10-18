@@ -2,7 +2,7 @@
 # Generate the running report from an Apple Health export.
 #
 # Usage:
-#   Rscript src/run_report.R path/to/export.zip [--duration 3] [--out output] [--reparse]
+#   Rscript src/cli/run_report.R path/to/export.zip [--duration 3] [--out output] [--reparse]
 #
 #   --duration number of calendar months to report, ending today (default 3: this month
 #              and the two before it)
@@ -13,8 +13,10 @@
 # the output folder and reused while the zip and the report start date are unchanged.
 
 suppressPackageStartupMessages({
-  if (!requireNamespace("ggplot2", quietly = TRUE))
-    stop("Missing package 'ggplot2'. Install with: install.packages('ggplot2')")
+  if (!requireNamespace("ggplot2", quietly = TRUE) || packageVersion("ggplot2") < "4.0.0")
+    stop("Needs package 'ggplot2' 4.0 or newer. Install with: install.packages('ggplot2')")
+  if (!requireNamespace("svglite", quietly = TRUE))
+    stop("Needs package 'svglite'. Install with: install.packages('svglite')")
 })
 
 # The report text uses non-ASCII characters (°, –, →); make sure the session is UTF-8.
@@ -22,7 +24,7 @@ if (!isTRUE(l10n_info()$`UTF-8`)) for (loc in c("en_US.UTF-8", "C.UTF-8", "Engli
   if (nzchar(suppressWarnings(Sys.setlocale("LC_CTYPE", loc)))) break
 
 args <- commandArgs(trailingOnly = TRUE)
-usage <- "Usage: Rscript src/run_report.R path/to/export.zip [--duration MONTHS] [--out DIR] [--reparse]"
+usage <- "Usage: Rscript src/cli/run_report.R path/to/export.zip [--duration MONTHS] [--out DIR] [--reparse]"
 opt <- list(duration = "3", out = "output", reparse = FALSE, zip = NA)
 i <- 1
 while (i <= length(args)) {
@@ -40,12 +42,11 @@ if (is.na(opt$zip)) stop(usage)
 months <- suppressWarnings(as.integer(opt$duration))
 if (is.na(months) || months < 1) stop("--duration must be a whole number of months (1 or more)\n", usage)
 
-# locate the project root (parent of this script's src/ folder) so it can be run from anywhere
+# locate src/ (the parent of this script's cli/ folder) so it can be run from anywhere
 file_arg <- grep("^--file=", commandArgs(FALSE), value = TRUE)
-root <- if (length(file_arg)) dirname(dirname(normalizePath(sub("^--file=", "", file_arg)))) else getwd()
-source(file.path(root, "src", "parse_export.R"))
-source(file.path(root, "src", "metrics.R"))
-source(file.path(root, "src", "build_report.R"))
+src_dir <- if (length(file_arg)) dirname(dirname(normalizePath(sub("^--file=", "", file_arg)))) else file.path(getwd(), "src")
+for (f in c("parse_export.R", "metrics.R", file.path("report", c("format.R", "page.R", "overview.R", "summary.R", "performance.R", "reference.R", "build.R"))))
+  source(file.path(src_dir, "cli", f))
 
 dir.create(opt$out, showWarnings = FALSE, recursive = TRUE)
 out_dir <- normalizePath(opt$out)
@@ -77,6 +78,5 @@ message("Report range: ", start, " to ", end)
 
 # ---- render ----
 out_file <- sprintf("running_report_%s_%s.html", start, end)
-build_report(cache, start, end, file.path(out_dir, out_file),
-             css_file = file.path(root, "src", "report.css"))
+build_report(cache, start, end, file.path(out_dir, out_file), shared_dir = file.path(src_dir, "shared"))
 message("Report: ", file.path(out_dir, out_file))

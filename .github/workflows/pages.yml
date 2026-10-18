@@ -1,0 +1,40 @@
+# Publishes the web app to GitHub Pages. Needs Settings > Pages > Source: GitHub Actions.
+name: Deploy web app to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/web/**', 'src/shared/**', 'example/export.zip', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Assemble the site
+        # Same folder layout as the repository, because the app loads ../shared/ and the sample ../../example/export.zip.
+        run: |
+          mkdir -p site/src site/example
+          cp -r src/web site/src/web
+          cp -r src/shared site/src/shared
+          cp example/export.zip site/example/
+          printf '%s\n' '<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=src/web/"><link rel="canonical" href="src/web/"><title>Running report</title><a href="src/web/">Running report</a>' > site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

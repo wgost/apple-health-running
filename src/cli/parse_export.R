@@ -1,6 +1,6 @@
 # Parse an Apple Health export (.zip) into tidy data frames.
 #
-# The export.xml inside the zip is usually several GB, too large to load as a
+# The XML file inside the zip (export.xml in English) is usually several GB, too large to load as a
 # DOM. It is streamed line by line in chunks instead. Apple writes one element
 # per line, so each <Record>, <Workout> and child element is matched with
 # regular expressions.
@@ -22,18 +22,19 @@ xml_attr <- function(x, name) {
 # Apple timestamps look like "2026-10-16 06:38:41 -0400".
 parse_hk_time <- function(x) as.POSIXct(x, format = "%Y-%m-%d %H:%M:%S %z", tz = "UTC")
 
-# Open a text connection to export.xml without extracting the whole archive
-# when possible. Falls back to extracting export.xml to a temp folder.
+# Open a text connection to the health data XML without extracting the whole archive when possible; falls back to
+# extracting it to a temp folder. Apple translates the file name (export.xml in English), so take the largest .xml in
+# the zip; the others (the clinical _cda.xml) are tiny by comparison.
 open_export_xml <- function(zip_path) {
   stopifnot(file.exists(zip_path))
   listing <- utils::unzip(zip_path, list = TRUE)
-  member <- listing$Name[grepl("(^|/)export\\.xml$", listing$Name)]
-  if (length(member) == 0) stop("No export.xml found inside ", zip_path)
-  member <- member[1]
+  xml <- listing[grepl("\\.xml$", listing$Name, ignore.case = TRUE), ]
+  if (nrow(xml) == 0) stop("No XML file found inside ", zip_path)
+  member <- xml$Name[which.max(xml$Length)]
   if (nzchar(Sys.which("unzip"))) {
     con <- pipe(paste("unzip -p", shQuote(normalizePath(zip_path)), shQuote(member)), open = "r")
   } else {
-    message("`unzip` not found on PATH; extracting export.xml to a temp folder...")
+    message("`unzip` not found on PATH; extracting the XML to a temp folder...")
     tmp <- tempfile("ahexport")
     utils::unzip(zip_path, files = member, exdir = tmp)
     con <- file(file.path(tmp, member), open = "r")

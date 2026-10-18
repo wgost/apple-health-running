@@ -268,15 +268,16 @@ month_row <- function(m) {
   mech <- m[!is.na(m$vert_osc_cm), ]
   fast <- m[which.min(m$pace_mi), ]
   W <- sum(mech$duration_min)
-  en <- m[!is.na(m$energy_kcal), ]   # energy is summed over the runs that have it
+  en <- m[!is.na(m$energy_kcal) & !is.na(m$mi), ]   # energy is summed over the runs that have it
+  dd <- m[!is.na(m$mi), ]   # runs with a recorded distance (a run without one must not turn the month's totals into NA)
   data.frame(
-    month = m$month[1], runs = nrow(m), mi = sum(m$mi), minutes = sum(m$duration_min),
+    month = m$month[1], runs = nrow(m), mi = sum(m$mi, na.rm = TRUE), minutes = sum(m$duration_min),
     kcal = if (nrow(en)) sum(en$energy_kcal) else NA_real_,
     kcal_per_mi = if (nrow(en)) sum(en$energy_kcal) / sum(en$mi) else NA_real_,
-    pace_mi = sum(m$duration_min) / sum(m$mi),
+    pace_mi = sum(dd$duration_min) / sum(dd$mi),
     hr_weighted = sum(m$hr_avg * m$duration_min, na.rm = TRUE) / sum(m$duration_min[!is.na(m$hr_avg)]),
     hr_max = if (any(!is.na(m$hr_max))) max(m$hr_max, na.rm = TRUE) else NA_real_,
-    longest_mi = max(m$mi), fastest_pace = fast$pace_mi, fastest_mi = fast$mi,
+    longest_mi = max(m$mi, na.rm = TRUE), fastest_pace = fast$pace_mi, fastest_mi = fast$mi,
     cadence = sum(m$cadence_spm * m$duration_min) / sum(m$duration_min),
     vert_osc = if (W > 0) sum(mech$vert_osc_cm * mech$duration_min) / W else NA_real_,
     gct = if (W > 0) sum(mech$gct_ms * mech$duration_min) / W else NA_real_,
@@ -285,7 +286,7 @@ month_row <- function(m) {
 
 week_start <- function(d) d - (as.integer(format(d, "%u")) - 1)
 
-# Weekly distance from all recorded runs; weeks that include a pre-range run
+# Weekly distance from all recorded runs (a run with no distance adds nothing); weeks that include a pre-range run
 # (from `prior`) count those miles too.
 weekly_load <- function(runs, prior = NULL) {
   all <- rbind(data.frame(date = runs$date, mi = runs$mi, indoor = runs$indoor, in_range = TRUE),
@@ -293,16 +294,16 @@ weekly_load <- function(runs, prior = NULL) {
   all$week <- week_start(all$date)
   weeks <- seq(min(all$week), max(all$week), by = 7)
   wk <- data.frame(week = weeks,
-                   mi = vapply(weeks, function(k) sum(all$mi[all$week == k]), numeric(1)),
-                   mi_outdoor = vapply(weeks, function(k) sum(all$mi[all$week == k & !all$indoor]), numeric(1)),
-                   mi_indoor = vapply(weeks, function(k) sum(all$mi[all$week == k & all$indoor]), numeric(1)),
+                   mi = vapply(weeks, function(k) sum(all$mi[all$week == k], na.rm = TRUE), numeric(1)),
+                   mi_outdoor = vapply(weeks, function(k) sum(all$mi[all$week == k & !all$indoor], na.rm = TRUE), numeric(1)),
+                   mi_indoor = vapply(weeks, function(k) sum(all$mi[all$week == k & all$indoor], na.rm = TRUE), numeric(1)),
                    in_range = vapply(weeks, function(k) any(all$in_range[all$week == k]), logical(1)))
   wk[wk$in_range, ]
 }
 
-# Groups of outdoor runs with a similar distance (recurring routes).
+# Groups of outdoor runs with a similar distance (recurring routes); runs with no distance are left out.
 route_groups <- function(runs, h = 0.6, min_runs = 5) {
-  o <- runs[!runs$indoor, ]
+  o <- runs[!runs$indoor & is.finite(runs$mi), ]
   o$route_mi <- rep(NA_real_, nrow(o))              # median distance of the run's group, NA if none
   if (nrow(o) < min_runs) return(o)
   cl <- stats::cutree(stats::hclust(stats::dist(o$mi), "complete"), h = h)
