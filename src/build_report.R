@@ -461,26 +461,23 @@ build_report <- function(data_rds, start, end, out_file, css_file) {
   h1("3. Reference")
   h2("How it's calculated")
   calc <- rbind(
-    c("Distance and pace", "Distance, duration", "Workout totals", dual("Distance in miles; duration excludes paused time.", "Distance in kilometres; duration excludes paused time.")),
-    c("", "Avg pace", "\u03a3 duration \u00f7 \u03a3 distance", "Per month."),
-    c("Heart rate", "Avg HR", "\u03a3(run HR \u00d7 duration) \u00f7 \u03a3 duration", "Run HR is the time-weighted mean of its HR samples: each sample counts for the time it covers."),
-    c("", "Max HR", "Highest HR sample", "Samples outside 40\u2013220 bpm, or spikes over 25 bpm from both neighbours, are excluded."),
-    c("", "Zone max HR", if (max_hr_from_age) "208 \u2212 0.7 \u00d7 age" else "Highest valid HR sample",
-      if (max_hr_from_age) "Age from the export\u2019s date of birth." else "No birth date in the export."),
-    c("", "Resting HR", "Median of resting-HR readings, last 30 days",
-      if (rest_hr_found) "Floor of the zones." else "No readings; zones use a share of max HR."),
-    c("", "HR zone limit", "resting HR + % \u00d7 (max HR \u2212 resting HR)", "Same method as Apple Watch. % = 60, 70, 80, 90 for the top of Z1\u2013Z4."),
-    c("", "Time in zone", "Time-weighted HR samples", "Same weighting as avg HR, so each run adds up to its elapsed time."),
-    c("Energy and form", "Active energy", "Watch workout total (kcal)", "Runs without it are skipped."),
-    c("", "Avg cadence", "Steps \u00f7 duration", "Steps/min, both feet."),
-    c("", "Vertical oscillation, ground contact", "Duration-weighted mean", "Runs without it are skipped."),
-    c("Performance (outdoor runs)", "Efficiency", "Speed (m/min) \u00f7 avg HR", "Metres per heartbeat; higher is better."),
-    c("", "Power, stride length", "Mean of the watch\u2019s samples", "Runs without samples are skipped."),
-    c("", "Cardiac drift", "100 \u00d7 (1 \u2212 (speed \u00f7 HR, 2nd half) \u00f7 (speed \u00f7 HR, 1st half))",
-      sprintf("Positive = HR rose faster than speed. Runs of %d min or more only.", DRIFT_MIN_MIN)),
-    c("", "Weather", "Temperature and humidity at the start", "Compared with efficiency and with HR at the same speed.")
+    c("Distance and pace", "Distance, duration", "Workout totals"),
+    c("", "Avg pace", "\u03a3 duration \u00f7 \u03a3 distance"),
+    c("Heart rate", "Avg HR", "\u03a3(run HR \u00d7 duration) \u00f7 \u03a3 duration"),
+    c("", "Max HR", "Highest HR sample"),
+    c("", "Zone max HR", if (max_hr_from_age) "208 \u2212 0.7 \u00d7 age" else "Highest valid HR sample"),
+    c("", "Resting HR", "Median of resting-HR readings, last 30 days"),
+    c("", "HR zone limit", "resting HR + % \u00d7 (max HR \u2212 resting HR)"),
+    c("", "Time in zone", "Time-weighted HR samples"),
+    c("Energy and form", "Active energy", "Watch workout total (kcal)"),
+    c("", "Avg cadence", "Steps \u00f7 duration"),
+    c("", "Vertical oscillation, ground contact", "Duration-weighted mean"),
+    c("Performance (outdoor runs)", "Efficiency", "Speed (m/min) \u00f7 avg HR"),
+    c("", "Power, stride length", "Mean of the watch\u2019s samples"),
+    c("", "Cardiac drift", "100 \u00d7 (1 \u2212 (speed \u00f7 HR, 2nd half) \u00f7 (speed \u00f7 HR, 1st half))"),
+    c("", "Weather", "Temperature and humidity at the start")
   )
-  add('<div class="tablebox">', html_table(setNames(as.data.frame(calc), c("Area", "Metric", "Formula", "Notes")), align = rep("l", 4), class = "formulas"), "</div>")
+  add('<div class="tablebox">', html_table(setNames(as.data.frame(calc), c("Area", "Metric", "Formula")), align = rep("l", 3), class = "formulas"), "</div>")
   close_div()
 
   h2("Data checks")
