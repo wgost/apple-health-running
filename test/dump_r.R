@@ -1,9 +1,9 @@
-# Writes the R implementation's results for an export, so web/test/compare.mjs can check the JS port against them.
-# Usage: Rscript web/test/dump_r.R parsed_export.rds OUT_DIR START END      (dates as YYYY-MM-DD)
+# Writes the R implementation's results for an export, so test/compare.mjs can check the JS port against them.
+# Usage: Rscript test/dump_r.R parsed_export.rds OUT_DIR START END      (dates as YYYY-MM-DD)
 args <- commandArgs(trailingOnly = TRUE)
 rds <- args[1]; out <- args[2]; start <- as.Date(args[3]); end <- as.Date(args[4])
-root <- normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE))), "..", ".."))
-for (f in c("parse_export.R", "metrics.R")) source(file.path(root, "cli", f))
+root <- normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE))), ".."))
+for (f in c("parse_export.R", "metrics.R")) source(file.path(root, "src", "cli", f))
 dir.create(out, showWarnings = FALSE, recursive = TRUE)
 w <- function(d, name) write.csv(d, file.path(out, paste0(name, ".csv")), row.names = FALSE)
 x <- readRDS(rds)

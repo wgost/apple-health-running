@@ -1,4 +1,4 @@
-// Run: node --test web/test/zip.test.mjs
+// Run: node --test test/zip.test.mjs
 // Checks the zip reader on deflated, stored and zip64 archives (made with Python's zipfile) and the JS parser's counts on the sample export.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -6,8 +6,8 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, openAsBlob } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { openExportXml } from '../js/zip.js';
-import { readHealthExport } from '../js/parse.js';
+import { openExportXml } from '../src/web/js/zip.js';
+import { readHealthExport } from '../src/web/js/parse.js';
 
 const XML = '<?xml version="1.0"?>\n<HealthData>\n <ExportDate value="2026-01-01 00:00:00 +0000"/>\n</HealthData>\n'.repeat(1000);
 function makeZip(method, zip64) {
@@ -32,7 +32,7 @@ test('rejects a zip without export.xml', async () => {
   await assert.rejects(openExportXml(await openAsBlob(path)), /No export\.xml/);
 });
 test('parses the sample export like the R parser (34 running workouts, 83,444 samples)', async () => {
-  const x = await readHealthExport(await openAsBlob(new URL('../../example/export.zip', import.meta.url).pathname), { start: '2026-08-01', end: '2026-10-18' });
+  const x = await readHealthExport(await openAsBlob(new URL('../example/export.zip', import.meta.url).pathname), { start: '2026-08-01', end: '2026-10-18' });
   assert.equal(x.workouts.length, 34);
   assert.equal(x.sampleCount, 83444);
   assert.equal(x.birthDate, '1991-03-15');

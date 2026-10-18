@@ -48,7 +48,7 @@ report_reference <- function(ctx) with(ctx, {
     c("", sprintf("Cardiac drift (runs of %d min or more, HR and distance in both halves)", DRIFT_MIN_MIN), cov(outv$drift_pct))
   )
   add('<div class="tablebox">', html_table(setNames(as.data.frame(checks), c("Area", "Check", "Result")), align = c("l", "l", "l"), class = "formulas"), "</div>")
-  add(sprintf('<p class="caption">%s. Runs are dated by local start time. Generated %s from %s by cli/run_report.R.</p>', dual("Distance in miles, temperature in \u00b0F", "Distance in kilometres, temperature in \u00b0C"),
+  add(sprintf('<p class="caption">%s. Runs are dated by local start time. Generated %s from %s by src/cli/run_report.R.</p>', dual("Distance in miles, temperature in \u00b0F", "Distance in kilometres, temperature in \u00b0C"),
               format(Sys.time(), "%Y-%m-%d %H:%M"), esc(basename(x$zip_path))))
   close_div()
   close_div()

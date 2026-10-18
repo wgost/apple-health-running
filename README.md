@@ -1,8 +1,8 @@
 # apple-health-running (v0.2)
 
 Turns the Apple Health export (`export.zip`) from your iPhone into one self-contained HTML running report.
-There are two versions that produce the same report: an R command-line tool (`cli/`, below) and a
-[browser app](web/README.md) (`web/`) that needs no install. The report includes:
+There are two versions that produce the same report: an R command-line tool (`src/cli/`, below) and a
+[browser app](src/web/README.md) (`src/web/`) that needs no install. The report includes:
 
 - **Summary**: how you have been running lately. The latest month at a glance, month-by-month tables that show
   whether you did more or less than last month, time spent in each heart-rate zone, and weekly charts.
@@ -27,7 +27,7 @@ install.packages(c("ggplot2", "svglite"))
 `example/export.zip` is a small, anonymised sample export. From the project folder:
 
 ```sh
-Rscript cli/run_report.R example/export.zip --duration 24 --out example   # 24 months reaches back to the sample's data
+Rscript src/cli/run_report.R example/export.zip --duration 24 --out example   # 24 months reaches back to the sample's data
 ```
 
 Then open the new `example/running_report_*.html` in a browser; a copy already
@@ -40,9 +40,9 @@ AirDrop or save the resulting `export.zip` to your computer. Don't unzip it; the
 program reads the zip directly. Then, from the shell in the project folder:
 
 ```sh
-Rscript cli/run_report.R ~/Downloads/export.zip
-Rscript cli/run_report.R ~/Downloads/export.zip --duration 6
-Rscript cli/run_report.R ~/Downloads/export.zip --out reports
+Rscript src/cli/run_report.R ~/Downloads/export.zip
+Rscript src/cli/run_report.R ~/Downloads/export.zip --duration 6
+Rscript src/cli/run_report.R ~/Downloads/export.zip --out reports
 ```
 
 ### Options
@@ -60,7 +60,7 @@ start date are unchanged, so re-running the report is quick.
 ### From an R session
 
 ```r
-source("cli/parse_export.R"); source("cli/metrics.R")
+source("src/cli/parse_export.R"); source("src/cli/metrics.R")
 start <- report_start(3)                      # same as --duration 3
 x     <- read_health_export("export.zip", start = start)
 runs  <- build_runs(x, start, Sys.Date())
@@ -78,28 +78,30 @@ and trends. Heart-rate zones are set from your resting and maximum HR. For the f
 ## Layout
 
 ```
-cli/                       the R command-line tool
-  run_report.R             entry point
-  parse_export.R           streams export.xml out of the zip
-  metrics.R                per-run metrics, monthly and weekly summaries
-  report/                  builds the HTML report: build.R puts it together; format.R (number and unit
+src/
+  cli/                     the R command-line tool
+    run_report.R           entry point
+    parse_export.R         streams export.xml out of the zip
+    metrics.R              per-run metrics, monthly and weekly summaries
+    report/                builds the HTML report: build.R puts it together; format.R (number and unit
                            formats), page.R (page and chart boxes), overview.R, summary.R, performance.R
                            and reference.R (the sections)
-web/                       the same report as a browser app (JavaScript only; see web/README.md)
-shared/                    used by both: report.css, page.tmpl (page shell), theme_init.js and page.js
+  web/                     the same report as a browser app (JavaScript only; see src/web/README.md)
+  shared/                  used by both: report.css, page.tmpl (page shell), theme_init.js and page.js
                            (the scripts in the report page: header, tabs, units, full-screen charts)
+test/                      tests: zip reader and report page (node --test test/*.test.mjs), R vs JavaScript numbers
 example/                   anonymised sample export.zip and a sample report
 LICENSE                    GNU General Public License v3.0
 ```
 
 Charts are inline SVG in both versions (sharp at any size; the sample report is about 300 kB).
 Changing how the report page looks or behaves usually means editing `shared/` once; the numbers, tables and charts
-are written twice (R and JavaScript), and `web/test/compare.mjs` checks that the two give the same numbers.
+are written twice (R and JavaScript), and `test/compare.mjs` checks that the two give the same numbers.
 
 ## What's new
 
 - Charts are inline SVG instead of PNG images (needs the `svglite` package; the report is about 5x smaller)
-- Move the R tool from `src/` to `cli/`, split the report builder by section, and share the report CSS, page template and
+- Put the R tool, the web app and the shared files under `src/` (`src/cli`, `src/web`, `src/shared`), move the web tests to `test/`, split the report builder by section, and share the report CSS, page template and
   page scripts between the R tool and the web app through `shared/`
 
 ## What's new in v0.2

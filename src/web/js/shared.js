@@ -9,6 +9,6 @@ export async function loadShared(read) {
 
 export const fetchShared = () => loadShared(async (name) => {
   const res = await fetch(new URL(`../../shared/${name}`, import.meta.url));
-  if (!res.ok) throw new Error(`Could not load shared/${name} (${res.status}). Serve the whole repository, not only web/.`);
+  if (!res.ok) throw new Error(`Could not load shared/${name} (${res.status}). Serve src/ with web/ and shared/ side by side.`);
   return res.text();
 });

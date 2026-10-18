@@ -2,13 +2,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { openAsBlob, readFileSync } from 'node:fs';
-import { readHealthExport } from '../js/parse.js';
-import { buildReport } from '../js/report.js';
-import { fillTemplate } from '../js/report/page.js';
-import { loadShared } from '../js/shared.js';
-import { dayNum, dayStr, reportStart } from '../js/util.js';
+import { readHealthExport } from '../src/web/js/parse.js';
+import { buildReport } from '../src/web/js/report.js';
+import { fillTemplate } from '../src/web/js/report/page.js';
+import { loadShared } from '../src/web/js/shared.js';
+import { dayNum, dayStr, reportStart } from '../src/web/js/util.js';
 
-const sharedUrl = (name) => new URL(`../../shared/${name}`, import.meta.url);
+const sharedUrl = (name) => new URL(`../src/shared/${name}`, import.meta.url);
 
 test('fillTemplate substitutes each placeholder once and leaves substituted text alone', () => {
   assert.equal(fillTemplate('a {{x}} b {{y}}', { x: '{{y}} $& \\n', y: 'Y' }), 'a {{y}} $& \\n b Y');
@@ -16,7 +16,7 @@ test('fillTemplate substitutes each placeholder once and leaves substituted text
 
 test('the sample report is a complete page built from the shared files', async () => {
   const today = '2026-10-18', end = dayNum(today), start = reportStart(24, end);
-  const x = await readHealthExport(await openAsBlob(new URL('../../example/export.zip', import.meta.url)), { start: dayStr(start), end: today });
+  const x = await readHealthExport(await openAsBlob(new URL('../example/export.zip', import.meta.url)), { start: dayStr(start), end: today });
   const shared = await loadShared(async (name) => readFileSync(sharedUrl(name), 'utf8'));
   const html = buildReport(x, start, end, { shared, sourceName: 'export.zip', generated: today });
 

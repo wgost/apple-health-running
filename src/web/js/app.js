@@ -24,7 +24,7 @@ drop.addEventListener('drop', (e) => { if (e.dataTransfer.files[0]) setFile(e.da
 sample.addEventListener('click', async (e) => {
   e.preventDefault();
   try {
-    const res = await fetch('../example/export.zip');
+    const res = await fetch('../../example/export.zip');
     if (!res.ok) throw new Error();
     setFile(new File([await res.blob()], 'export.zip'));
     months.value = '24';

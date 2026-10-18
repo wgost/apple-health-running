@@ -1,9 +1,9 @@
 // Checks the JS port against the R results written by dump_r.R.
-// Usage: node web/test/compare.mjs export.zip R_OUT_DIR START END
+// Usage: node test/compare.mjs export.zip R_OUT_DIR START END
 import { openAsBlob, readFileSync, existsSync } from 'node:fs';
-import { readHealthExport } from '../js/parse.js';
-import * as M from '../js/metrics.js';
-import { dayNum, dayStr, isFin } from '../js/util.js';
+import { readHealthExport } from '../src/web/js/parse.js';
+import * as M from '../src/web/js/metrics.js';
+import { dayNum, dayStr, isFin } from '../src/web/js/util.js';
 
 const [zip, dir, start, end] = process.argv.slice(2);
 const csv = (name) => {

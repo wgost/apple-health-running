@@ -19,4 +19,4 @@ output/
 # ...except the anonymised sample in example/
 !example/export.zip
 !example/*.html
-!web/index.html
+!src/web/index.html
