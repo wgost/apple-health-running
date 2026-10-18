@@ -74,6 +74,18 @@ table.formulas td:first-child { white-space:nowrap; font-weight:600; }
 .csub { font-size:13px; color:var(--fg2); margin-top:2px; }
 .fig { margin-top:6px; line-height:0; }
 .fig img { display:block; width:100%; height:auto; }
+/* Phones: a chart opens full screen when tapped (script in build_report.R); the corner icon says so */
+@media (max-width:760px) {
+  .chart .fig { position:relative; }
+  .chart .fig img { cursor:zoom-in; -webkit-tap-highlight-color:transparent; }
+  .chart .fig::after { content:"\2922"; position:absolute; right:2px; top:2px; width:26px; height:26px; line-height:26px; text-align:center; font-size:16px;
+    color:var(--fg2); background:var(--surface); border:1px solid var(--rule); border-radius:6px; opacity:.85; pointer-events:none; }
+}
+#lightbox { position:fixed; inset:0; z-index:30; background:var(--surface); }
+#lightbox[hidden] { display:none; }
+#lightbox img { position:absolute; left:50%; top:50%; max-width:none; }
+#lightbox button { position:absolute; top:10px; right:10px; z-index:1; width:40px; height:40px; font-size:18px; color:var(--fg); background:var(--bg); border:1px solid var(--rule); border-radius:8px; }
+html.lb-open { overflow:hidden; }
 :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
 @media (max-width:600px) { h1 { font-size:22px; } }
@@ -120,7 +132,7 @@ table.formulas td:first-child { white-space:nowrap; font-weight:600; }
 /* Print: always light, no header or switches, all panes shown, light figures */
 @media print {
   :root, :root[data-theme] { color-scheme:light; --bg:#fff; --surface:#fff; --fg:#14181d; --fg2:#4a525c; --fg3:#6f7781; --rule:#dde1e6; --grid:#e8ebee; }
-  #topbar, .seg { display:none; }
+  #topbar, .seg, #lightbox, .chart .fig::after { display:none !important; }
   .pane[hidden] { display:block !important; }
   .pane-title { display:block; }
   main { padding:0; }
