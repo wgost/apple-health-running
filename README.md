@@ -1,4 +1,4 @@
-# apple-health-running (v0.2)
+# apple-health-running (v0.3)
 
 Turns the Apple Health export (`export.zip`) from your iPhone into one self-contained HTML running report.
 There are two versions that produce the same report: a [browser app](#web-app) (`src/web/`) that needs no install,
@@ -108,12 +108,14 @@ Charts are inline SVG in both versions (sharp at any size; the sample report is 
 Changing how the report page looks or behaves usually means editing `src/shared/` once; the numbers, tables and charts
 are written twice (R and JavaScript), and `test/compare.mjs` checks that the two give the same numbers.
 
-## What's new
+## What's new in v0.3
 
-- Charts are inline SVG instead of PNG images (needs the `svglite` package; the report is about 5x smaller)
-- Put the R tool, the web app and the shared files under `src/` (`src/cli`, `src/web`, `src/shared`); tests are in `test/`
-- Split the report builder by section, and share the report CSS, page template and page scripts between the R tool and
-  the web app (`src/shared/`)
+- Add a browser version of the report (`src/web/`): choose `export.zip` on a page and get the report, with nothing
+  uploaded. It is plain JavaScript, so it needs no R and no install
+- Draw charts as inline SVG instead of PNG images (needs the `svglite` package; the report is about 5x smaller)
+- Move the code under `src/` (`src/cli` for the R tool, `src/web`, `src/shared`) and the tests to `test/`
+- Share the report CSS, page template and page scripts between the R tool and the web app (`src/shared/`), and split
+  the report builder by section
 
 ## What's new in v0.2
 
