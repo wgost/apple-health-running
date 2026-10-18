@@ -528,8 +528,8 @@ build_report <- function(data_rds, start, end, out_file, css_file) {
     "wire('units-toggle','data-units','si','us','units','<i>km \u00b7 </i>\u00b0C','<i>mi \u00b7 </i>\u00b0F');",
     "var bar=document.getElementById('topbar');function onscroll(){bar.classList.toggle('scrolled',window.scrollY>8);}",   # semi-transparent bar once scrolled
     "window.addEventListener('scroll',onscroll,{passive:true});onscroll();",
-    "var links=document.querySelectorAll('#topbar nav a');",                          # underline the section being read
-    "function spy(){var cur=null;for(var i=0;i<links.length;i++){var el=document.getElementById(links[i].getAttribute('href').slice(1));",
+    "var links=document.querySelectorAll('#topbar nav a');",                          # underline the section being read (the first one until the second heading is reached, so the title and KPI cards count as it)
+    "function spy(){var cur=links[0];for(var i=0;i<links.length;i++){var el=document.getElementById(links[i].getAttribute('href').slice(1));",
     "if(el&&el.getBoundingClientRect().top<=140)cur=links[i];}",
     "if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4)cur=links[links.length-1];",
     "for(var j=0;j<links.length;j++)links[j].classList.toggle('on',links[j]===cur);}",
