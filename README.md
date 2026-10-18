@@ -1,7 +1,8 @@
 # apple-health-running (v0.2)
 
-An R program that turns the Apple Health export (`export.zip`) from your iPhone
-into one self-contained HTML running report. The report includes:
+Turns the Apple Health export (`export.zip`) from your iPhone into one self-contained HTML running report.
+There are two versions that produce the same report: an R command-line tool (`cli/`, below) and a
+[browser app](web/README.md) (`web/`) that needs no install. The report includes:
 
 - **Summary**: how you have been running lately. The latest month at a glance, month-by-month tables that show
   whether you did more or less than last month, time spent in each heart-rate zone, and weekly charts.
@@ -11,22 +12,26 @@ into one self-contained HTML running report. The report includes:
 
 The report also features a dark / light display (it opens in dark mode, and your choice is remembered) and a
 unit switch between US (miles, °F) and metric (km, °C) that changes every table and chart at once.
-See the [example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-17.html) for what it looks like.
+See the [example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-18.html) for what it looks like.
 
 ## Usage
 
-Needs R ≥ 4.1 and the `ggplot2` package (4.0 or newer). The `ragg` package is optional; if it is installed the report file is smaller.
+Needs R ≥ 4.1 and the `ggplot2` (4.0 or newer) and `svglite` packages:
+
+```r
+install.packages(c("ggplot2", "svglite"))
+```
 
 ### Try the example
 
 `example/export.zip` is a small, anonymised sample export. From the project folder:
 
 ```sh
-Rscript src/run_report.R example/export.zip --duration 24 --out example   # 24 months reaches back to the sample's data
+Rscript cli/run_report.R example/export.zip --duration 24 --out example   # 24 months reaches back to the sample's data
 ```
 
 Then open the new `example/running_report_*.html` in a browser; a copy already
-generated this way is included: **[click to open the example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-17.html)**.
+generated this way is included: **[click to open the example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-18.html)**.
 
 ### Run it on your own data
 
@@ -35,9 +40,9 @@ AirDrop or save the resulting `export.zip` to your computer. Don't unzip it; the
 program reads the zip directly. Then, from the shell in the project folder:
 
 ```sh
-Rscript src/run_report.R ~/Downloads/export.zip
-Rscript src/run_report.R ~/Downloads/export.zip --duration 6
-Rscript src/run_report.R ~/Downloads/export.zip --out reports
+Rscript cli/run_report.R ~/Downloads/export.zip
+Rscript cli/run_report.R ~/Downloads/export.zip --duration 6
+Rscript cli/run_report.R ~/Downloads/export.zip --out reports
 ```
 
 ### Options
@@ -55,7 +60,7 @@ start date are unchanged, so re-running the report is quick.
 ### From an R session
 
 ```r
-source("src/parse_export.R"); source("src/metrics.R")
+source("cli/parse_export.R"); source("cli/metrics.R")
 start <- report_start(3)                      # same as --duration 3
 x     <- read_health_export("export.zip", start = start)
 runs  <- build_runs(x, start, Sys.Date())
@@ -68,19 +73,34 @@ The report takes each running workout in the export, measures it (distance, dura
 rate, energy, cadence), adds the watch's extra readings when present (power, stride length, vertical
 oscillation, ground contact, weather), and then groups the runs by month and by week to show totals, averages
 and trends. Heart-rate zones are set from your resting and maximum HR. For the full detail and the data checks, open the
-[example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-17.html) and see its **Reference** section, under "How it's calculated".
+[example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-18.html) and see its **Reference** section, under "How it's calculated".
 
 ## Layout
 
 ```
-src/run_report.R           command-line entry point
-src/parse_export.R         streams export.xml out of the zip
-src/metrics.R              per-run metrics, monthly and weekly summaries
-src/build_report.R         builds the HTML report (tables, figures, data checks)
-src/report.css             report styling
+cli/                       the R command-line tool
+  run_report.R             entry point
+  parse_export.R           streams export.xml out of the zip
+  metrics.R                per-run metrics, monthly and weekly summaries
+  report/                  builds the HTML report: build.R puts it together; format.R (number and unit
+                           formats), page.R (page and chart boxes), overview.R, summary.R, performance.R
+                           and reference.R (the sections)
+web/                       the same report as a browser app (JavaScript only; see web/README.md)
+shared/                    used by both: report.css, page.tmpl (page shell), theme_init.js and page.js
+                           (the scripts in the report page: header, tabs, units, full-screen charts)
 example/                   anonymised sample export.zip and a sample report
 LICENSE                    GNU General Public License v3.0
 ```
+
+Charts are inline SVG in both versions (sharp at any size; the sample report is about 300 kB).
+Changing how the report page looks or behaves usually means editing `shared/` once; the numbers, tables and charts
+are written twice (R and JavaScript), and `web/test/compare.mjs` checks that the two give the same numbers.
+
+## What's new
+
+- Charts are inline SVG instead of PNG images (needs the `svglite` package; the report is about 5x smaller)
+- Move the R tool from `src/` to `cli/`, split the report builder by section, and share the report CSS, page template and
+  page scripts between the R tool and the web app through `shared/`
 
 ## What's new in v0.2
 
