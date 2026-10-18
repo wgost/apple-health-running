@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Running report from Apple Health</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main>
+  <h1>Running report</h1>
+  <p class="lead">Turn your Apple Health export into a running report. Your file is read in this browser tab and is <b>never uploaded</b>.</p>
+
+  <form id="form">
+    <label id="drop" class="drop">
+      <input id="file" type="file" accept=".zip,application/zip" />
+      <span id="drop-text">Choose export.zip</span>
+      <small>or drop it here</small>
+    </label>
+
+    <div class="row">
+      <label for="months">Period</label>
+      <select id="months">
+        <option value="1">This month</option>
+        <option value="3" selected>Last 3 months</option>
+        <option value="6">Last 6 months</option>
+        <option value="12">Last 12 months</option>
+        <option value="24">Last 24 months</option>
+      </select>
+    </div>
+
+    <button id="go" type="submit" disabled>Create report</button>
+    <div id="progress" hidden>
+      <progress id="bar" max="1" value="0"></progress>
+      <p id="status" role="status"></p>
+    </div>
+    <p id="error" class="error" role="alert" hidden></p>
+  </form>
+
+  <details>
+    <summary>How do I get export.zip?</summary>
+    <ol>
+      <li>On your iPhone open the <b>Health</b> app and tap your picture (top right).</li>
+      <li>Scroll down and tap <b>Export All Health Data</b>, then wait for it to finish.</li>
+      <li>Save the zip to <b>Files</b> (or AirDrop it to your computer), then choose it above.</li>
+    </ol>
+    <p>The file can be several GB; reading it takes a minute or two. Keep this tab open and in the foreground.</p>
+  </details>
+  <p class="foot"><a id="sample" href="#">Try it with the sample export</a></p>
+</main>
+
+<div id="viewer" hidden>
+  <div class="bar"><button id="back" type="button">&larr; New report</button><a id="download" class="btn">Download HTML</a></div>
+  <iframe id="frame" title="Running report"></iframe>
+</div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
