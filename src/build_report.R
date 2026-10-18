@@ -527,11 +527,13 @@ build_report <- function(data_rds, start, end, out_file, css_file) {
     "var bar=document.getElementById('topbar');function onscroll(){bar.classList.toggle('scrolled',window.scrollY>8);}",   # semi-transparent bar once scrolled
     "window.addEventListener('scroll',onscroll,{passive:true});onscroll();",
     "var links=document.querySelectorAll('#topbar nav a');",                          # underline the section being read (the first one until the second heading is reached, so the title and KPI cards count as it)
-    "function spy(){var cur=links[0];for(var i=0;i<links.length;i++){var el=document.getElementById(links[i].getAttribute('href').slice(1));",
-    "if(el&&el.getBoundingClientRect().top<=140)cur=links[i];}",
+    "function spy(){var cur=links[0],line=Math.max(140,window.innerHeight*0.3);for(var i=0;i<links.length;i++){var el=document.getElementById(links[i].getAttribute('href').slice(1));",
+    "if(el&&el.getBoundingClientRect().top<=line)cur=links[i];}",
     "if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4)cur=links[links.length-1];",
     "for(var j=0;j<links.length;j++)links[j].classList.toggle('on',links[j]===cur);}",
-    "window.addEventListener('scroll',spy,{passive:true});window.addEventListener('resize',spy);window.addEventListener('load',spy);spy();})();</script>")
+    "var busy=false;function follow(){if(busy)return;busy=true;var last=-1,still=0;(function tick(){spy();var y=window.scrollY;still=y===last?still+1:0;last=y;",   # keep checking each frame until scrolling has stopped (phone browsers can skip scroll events while a swipe coasts)
+    "if(still<20)requestAnimationFrame(tick);else busy=false;})();}",
+    "['scroll','touchmove','touchend','scrollend','resize','load'].forEach(function(n){window.addEventListener(n,follow,{passive:true});});spy();})();</script>")
   tabs_js <- paste0("<script>(function(){var segs=document.querySelectorAll('.seg');",     # All / Outdoor / Indoor switches, one per group
     "function wire(seg){var g=seg.getAttribute('data-group'),btns=seg.querySelectorAll('button'),",
     "panes=document.querySelectorAll('.pane[data-group=\"'+g+'\"]');",
