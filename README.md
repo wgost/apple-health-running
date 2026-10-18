@@ -1,8 +1,8 @@
 # apple-health-running (v0.2)
 
 Turns the Apple Health export (`export.zip`) from your iPhone into one self-contained HTML running report.
-There are two versions that produce the same report: an R command-line tool (`src/cli/`, below) and a
-[browser app](src/web/README.md) (`src/web/`) that needs no install. The report includes:
+There are two versions that produce the same report: a [browser app](#web-app) (`src/web/`) that needs no install,
+and an R [command-line tool](#command-line-r) (`src/cli/`). The report includes:
 
 - **Summary**: how you have been running lately. The latest month at a glance, month-by-month tables that show
   whether you did more or less than last month, time spent in each heart-rate zone, and weekly charts.
@@ -14,7 +14,17 @@ The report also features a dark / light display (it opens in dark mode, and your
 unit switch between US (miles, °F) and metric (km, °C) that changes every table and chart at once.
 See the [example report](https://htmlpreview.github.io/?https://github.com/wgost/apple-health-running/blob/main/example/running_report_2024-11-01_2026-10-18.html) for what it looks like.
 
-## Usage
+## Web app
+
+> **Placeholder: to be completed after the web app is deployed.**
+>
+> Live app: _URL to be added_
+>
+> Planned content: open the page, choose `export.zip`, pick the period, and get the report in the browser. The file is
+> read in the browser tab and never uploaded. Browser requirements are in [`src/web/README.md`](src/web/README.md),
+> which also covers running it locally and publishing it.
+
+## Command line (R)
 
 Needs R ≥ 4.1 and the `ggplot2` (4.0 or newer) and `svglite` packages:
 
@@ -95,14 +105,15 @@ LICENSE                    GNU General Public License v3.0
 ```
 
 Charts are inline SVG in both versions (sharp at any size; the sample report is about 300 kB).
-Changing how the report page looks or behaves usually means editing `shared/` once; the numbers, tables and charts
+Changing how the report page looks or behaves usually means editing `src/shared/` once; the numbers, tables and charts
 are written twice (R and JavaScript), and `test/compare.mjs` checks that the two give the same numbers.
 
 ## What's new
 
 - Charts are inline SVG instead of PNG images (needs the `svglite` package; the report is about 5x smaller)
-- Put the R tool, the web app and the shared files under `src/` (`src/cli`, `src/web`, `src/shared`), move the web tests to `test/`, split the report builder by section, and share the report CSS, page template and
-  page scripts between the R tool and the web app through `shared/`
+- Put the R tool, the web app and the shared files under `src/` (`src/cli`, `src/web`, `src/shared`); tests are in `test/`
+- Split the report builder by section, and share the report CSS, page template and page scripts between the R tool and
+  the web app (`src/shared/`)
 
 ## What's new in v0.2
 
