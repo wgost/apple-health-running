@@ -542,12 +542,27 @@ build_report <- function(data_rds, start, end, out_file, css_file) {
     "for(var j=0;j<panes.length;j++)panes[j].hidden=panes[j].getAttribute('data-pane')!==id;}",
     "seg.addEventListener('click',function(e){var b=e.target.closest('button');if(b)pick(b.getAttribute('data-pane'));});pick('all');}",
     "for(var k=0;k<segs.length;k++)wire(segs[k]);})();</script>")
+  # Tap a chart on a phone to see it full screen. In portrait the chart is turned sideways to use the screen's length;
+  # tap anywhere, the close button or Escape to go back.
+  lightbox_js <- paste0("<script>(function(){var mq=window.matchMedia('(max-width:760px)');",
+    "var box=document.createElement('div');box.id='lightbox';box.hidden=true;",
+    "box.innerHTML='<button type=\"button\" aria-label=\"Close\">\\u2715</button><img alt=\"\">';document.body.appendChild(box);",
+    "var im=box.querySelector('img');",
+    "function fit(){if(box.hidden||!im.naturalWidth)return;var W=window.innerWidth,H=window.innerHeight,iw=im.naturalWidth,ih=im.naturalHeight,",
+    "rot=H>W&&iw>ih,pad=12,s=Math.min(((rot?H:W)-2*pad)/iw,((rot?W:H)-2*pad)/ih);",
+    "im.style.width=iw*s+'px';im.style.height=ih*s+'px';im.style.transform='translate(-50%,-50%)'+(rot?' rotate(90deg)':'');}",
+    "function open(t){im.onload=fit;im.src=t.src;im.alt=t.alt;box.hidden=false;document.documentElement.classList.add('lb-open');fit();}",
+    "function close(){box.hidden=true;im.removeAttribute('src');document.documentElement.classList.remove('lb-open');}",
+    "document.addEventListener('click',function(e){var t=e.target;if(!t.closest)return;",
+    "if(t.closest('#lightbox')){close();return;}if(mq.matches&&t.matches('.chart .fig img'))open(t);});",
+    "document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!box.hidden)close();});",
+    "window.addEventListener('resize',fit);window.addEventListener('orientationchange',fit);})();</script>")
   html <- paste0('<!DOCTYPE html>\n<html lang="en" data-theme="dark">\n<head>\n<meta charset="utf-8" />\n',
                  '<meta name="viewport" content="width=device-width, initial-scale=1" />\n<title>Running Log</title>\n', theme_init, "\n",
                  "<style>\n", css, "\n</style>\n</head>\n<body>\n",
                  '<header id="topbar"><nav>', toc_html, '</nav><div class="tools"><button id="theme-toggle" type="button" aria-label="Switch between dark and light mode" title="Dark / light"></button>',
                  '<button id="units-toggle" type="button" aria-label="Switch between US units (miles, \u00b0F) and metric units (km, \u00b0C)" title="US / metric units"></button></div></header>\n', toggle_js,
-                 '\n<main>\n<h1 class="title">Running Log</h1>\n', paste(parts, collapse = "\n"), "\n</main>\n", tabs_js, "\n</body>\n</html>\n")
+                 '\n<main>\n<h1 class="title">Running Log</h1>\n', paste(parts, collapse = "\n"), "\n</main>\n", tabs_js, "\n", lightbox_js, "\n</body>\n</html>\n")
   writeLines(html, out_file, useBytes = TRUE)
   invisible(out_file)
 }
